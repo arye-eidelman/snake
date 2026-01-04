@@ -3,12 +3,29 @@ import _ from 'lodash'
 import './App.css'
 import Game from './Game'
 import GameOptionsDialog from './GameOptionsDialog'
+import { getAvailableInputTypes } from './utils/deviceDetection'
 
 const INPUT_CONTROLS_PROFILES = [
-  { id: 'arrowKeys', keyMap: { left: 'left', up: 'up', right: 'right', down: 'down' } },
-  { id: 'asdfKeys', keyMap: { a: 'left', w: 'up', d: 'right', s: 'down' } },
+  { id: 'arrowKeys', keyMap: { left: 'left', up: 'up', right: 'right', down: 'down' }, type: 'keyboard' },
+  { id: 'asdfKeys', keyMap: { a: 'left', w: 'up', d: 'right', s: 'down' }, type: 'keyboard' },
+  { id: 'joystickLeft', keyMap: {}, type: 'joystick', position: 'left' },
+  { id: 'joystickRight', keyMap: {}, type: 'joystick', position: 'right' },
 ]
-const BASIC_GAME_OPTIONS = { boardSize: 25, speed: 165, foodAmount: 4, inputControls: INPUT_CONTROLS_PROFILES[0] }
+
+function getDefaultInputControl() {
+  const availableInputs = getAvailableInputTypes(INPUT_CONTROLS_PROFILES)
+  // Prefer keyboard if available, otherwise use first available joystick
+  if (availableInputs.keyboard.length > 0) {
+    return availableInputs.keyboard[0]
+  }
+  if (availableInputs.joystick.length > 0) {
+    return availableInputs.joystick[0]
+  }
+  // Fallback to first profile (shouldn't happen if error handling works)
+  return INPUT_CONTROLS_PROFILES[0]
+}
+
+const BASIC_GAME_OPTIONS = { boardSize: 25, speed: 165, foodAmount: 4, inputControls: getDefaultInputControl() }
 
 function generateNewGame(options) {
   const center = Math.ceil(options.boardSize / 2)

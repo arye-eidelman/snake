@@ -1,18 +1,66 @@
+import { getAvailableInputTypes } from './utils/deviceDetection'
+
 function GameOptionsDialog({ gameOptions, setGameOption, inputControlsProfiles }) {
+  const availableInputs = getAvailableInputTypes(inputControlsProfiles)
+  
+  // Show error if no input methods available
+  if (!availableInputs.hasAny) {
+    return (
+      <div className="m-4 p-4 bg-red-100 border-2 border-red-500 rounded-md">
+        <p className="text-red-800 font-semibold">No input methods available</p>
+        <p className="text-red-600 text-sm mt-2">
+          Please connect a keyboard or use a touch-enabled device to play.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div>
       <fieldset className="m-4">
         <label className="m-2 inline-block">Controls:</label>
-        <span className="m-2">
-          <input type="radio" id="inputControls_arrowKeys" name="inputControls" value="arrowKeys" checked={gameOptions.inputControls.id === 'arrowKeys'}
-            onChange={e => setGameOption('inputControls', inputControlsProfiles.find(inputControls => inputControls.id === e.target.value))} />
-          <label className="mx-1" htmlFor="inputControls_arrowKeys">Arrow Keys</label>
-        </span>
-        <span className="m-2">
-          <input type="radio" id="inputControls_asdfKeys" name="inputControls" value="asdfKeys" checked={gameOptions.inputControls.id === 'asdfKeys'}
-            onChange={e => setGameOption('inputControls', inputControlsProfiles.find(inputControls => inputControls.id === e.target.value))} />
-          <label className="mx-1" htmlFor="inputControls_asdfKeys">asdf Keys</label>
-        </span>
+        
+        {/* Keyboard options - only show if keyboard is available */}
+        {availableInputs.keyboard.length > 0 && (
+          <>
+            {availableInputs.keyboard.map(profile => (
+              <span key={profile.id} className="m-2">
+                <input 
+                  type="radio" 
+                  id={`inputControls_${profile.id}`} 
+                  name="inputControls" 
+                  value={profile.id} 
+                  checked={gameOptions.inputControls.id === profile.id}
+                  onChange={e => setGameOption('inputControls', inputControlsProfiles.find(inputControls => inputControls.id === e.target.value))} 
+                />
+                <label className="mx-1" htmlFor={`inputControls_${profile.id}`}>
+                  {profile.id === 'arrowKeys' ? 'Arrow Keys' : 'asdf Keys'}
+                </label>
+              </span>
+            ))}
+          </>
+        )}
+        
+        {/* Joystick options - only show on touch screens */}
+        {availableInputs.joystick.length > 0 && (
+          <>
+            {availableInputs.joystick.map(profile => (
+              <span key={profile.id} className="m-2">
+                <input 
+                  type="radio" 
+                  id={`inputControls_${profile.id}`} 
+                  name="inputControls" 
+                  value={profile.id} 
+                  checked={gameOptions.inputControls.id === profile.id}
+                  onChange={e => setGameOption('inputControls', inputControlsProfiles.find(inputControls => inputControls.id === e.target.value))} 
+                />
+                <label className="mx-1" htmlFor={`inputControls_${profile.id}`}>
+                  Joystick {profile.position === 'left' ? 'Left' : 'Right'}
+                </label>
+              </span>
+            ))}
+          </>
+        )}
       </fieldset>
 
       <fieldset className="m-4">
