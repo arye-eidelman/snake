@@ -8,8 +8,8 @@ import { getAvailableInputTypes } from './utils/deviceDetection'
 const INPUT_CONTROLS_PROFILES = [
   { id: 'arrowKeys', keyMap: { left: 'left', up: 'up', right: 'right', down: 'down' }, type: 'keyboard' },
   { id: 'asdfKeys', keyMap: { a: 'left', w: 'up', d: 'right', s: 'down' }, type: 'keyboard' },
-  { id: 'joystickLeft', keyMap: {}, type: 'joystick', position: 'left' },
   { id: 'joystickRight', keyMap: {}, type: 'joystick', position: 'right' },
+  { id: 'joystickLeft', keyMap: {}, type: 'joystick', position: 'left' },
 ]
 
 function getDefaultInputControl() {
