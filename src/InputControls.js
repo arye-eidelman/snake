@@ -11,12 +11,12 @@ function InputControls({
   const isJoystick = keyboardProfile.type === 'joystick'
   const joystickPosition = keyboardProfile.position || 'right'
   const lastVibrationTime = useRef(0)
-  const VIBRATION_THROTTLE_MS = 50 // Throttle vibrations to avoid too many calls
+  const VIBRATION_THROTTLE_MS = 25 // Throttle vibrations to avoid too many calls
 
   // Calculate haptic intensity based on proximity to diagonal angles
   const calculateHapticIntensity = (angle) => {
     const diagonalAngles = [45, 135, 225, 315]
-    
+
     // Find minimum distance to any diagonal angle
     const distances = diagonalAngles.map(diagonal => {
       // Calculate angular distance (handling wrap-around at 0/360)
@@ -24,30 +24,30 @@ function InputControls({
       diff = Math.min(diff, 360 - diff)
       return diff
     })
-    
+
     const minDistance = Math.min(...distances)
-    
+
     // Intensity peaks at diagonal angles (0 distance) and decreases linearly
-    // Maximum intensity at 0°, zero intensity at 45° away
-    const maxDistance = 45
+    // Maximum intensity at 0°, zero intensity at 15° away
+    const maxDistance = 15
     const intensity = Math.max(0, 1 - (minDistance / maxDistance))
-    
+
     return intensity
   }
 
   const triggerHapticFeedback = (intensity) => {
     // Check if vibration API is available
     if (!navigator.vibrate) return
-    
+
     // Throttle vibrations to avoid too many calls
     const now = Date.now()
     if (now - lastVibrationTime.current < VIBRATION_THROTTLE_MS) return
     lastVibrationTime.current = now
-    
+
     // Convert intensity (0-1) to vibration duration (0-20ms)
     // Use a non-linear curve for better feel (intensity^2)
     const duration = Math.round(intensity * intensity * 20)
-    
+
     if (duration > 0) {
       navigator.vibrate(duration)
     }
@@ -56,7 +56,7 @@ function InputControls({
   const onNippleMove = (e, data) => {
     if (data && data.direction && data.direction.angle) {
       onDirectionChange(data.direction.angle)
-      
+
       // Add haptic feedback based on angle
       // react-nipple provides angle in data.angle.degree (in degrees, 0-360)
       let angleInDegrees = null
@@ -65,7 +65,7 @@ function InputControls({
       } else if (typeof data.angle === 'number') {
         angleInDegrees = data.angle
       }
-      
+
       if (angleInDegrees !== null) {
         const intensity = calculateHapticIntensity(angleInDegrees)
         triggerHapticFeedback(intensity)
@@ -94,16 +94,8 @@ function InputControls({
   }, [keyboardProfile.keyMap])
 
   return <>
-    {/* Only show keyboard handler if not using joystick */}
-    {!isJoystick && (
-      <KeyboardEventHandler
-        handleKeys={inputKeys}
-        onKeyEvent={handleKeyDown}
-      />
-    )}
-
-    {/* Only show joystick if joystick option is selected */}
-    {isJoystick && (
+    { /* show the input controls appropriate for the selected profile */}
+    {isJoystick ? (
       <div className={`fixed bottom-24 ${joystickPosition === 'left' ? 'left-24' : 'right-24'}`}>
         <ReactNipple
           options={{
@@ -113,7 +105,13 @@ function InputControls({
           onMove={onNippleMove}
         />
       </div>
+    ) : (
+      <KeyboardEventHandler
+        handleKeys={inputKeys}
+        onKeyEvent={handleKeyDown}
+      />
     )}
+
   </>
 }
 
