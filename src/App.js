@@ -25,7 +25,7 @@ function getDefaultInputControl() {
   return INPUT_CONTROLS_PROFILES[0]
 }
 
-const BASIC_GAME_OPTIONS = { boardSize: 25, speed: 165, foodAmount: 4, inputControls: getDefaultInputControl() }
+const BASIC_GAME_OPTIONS = { boardSize: 25, speed: 165, foodAmount: 4, inputControls: getDefaultInputControl(), wrapAround: false }
 
 function generateNewGame(options) {
   const center = Math.ceil(options.boardSize / 2)
@@ -50,6 +50,7 @@ function generateNewGame(options) {
     over: false,
     foods: getRandomEmptyPositions(options.boardSize, [snake.head, ...snake.body], options.foodAmount),
     foodAmount: options.foodAmount,
+    wrapAround: options.wrapAround,
     snake: snake,
   }
 }

@@ -110,6 +110,18 @@ function GameOptionsDialog({ gameOptions, setGameOption, inputControlsProfiles }
           <label className="mx-1" htmlFor="speed_fast">Fast</label>
         </span>
       </fieldset>
+
+      <fieldset className="m-4">
+        <span className="m-2">
+          <input 
+            type="checkbox" 
+            id="wrapAround" 
+            checked={gameOptions.wrapAround || false} 
+            onChange={e => setGameOption('wrapAround', e.target.checked)} 
+          />
+          <label className="mx-1" htmlFor="wrapAround">Wrap Around Walls</label>
+        </span>
+      </fieldset>
     </div>
   )
 }

@@ -46,13 +46,28 @@ function Game({ game, setGame, getRandomEmptyPositions, restart }) {
           }
         }
 
-        // kill if crashing into wall
-        if (nextSnake.head.x < 0
-          || nextSnake.head.x >= game.boardSize
-          || nextSnake.head.y < 0
-          || nextSnake.head.y >= game.boardSize
-        ) {
-          return { ...game, over: true, snake: { ...snake, alive: false } }
+        // handle wall collision - wrap around or kill
+        if (game.wrapAround) {
+          // wrap around walls
+          if (nextSnake.head.x < 0) {
+            nextSnake.head.x = game.boardSize - 1
+          } else if (nextSnake.head.x >= game.boardSize) {
+            nextSnake.head.x = 0
+          }
+          if (nextSnake.head.y < 0) {
+            nextSnake.head.y = game.boardSize - 1
+          } else if (nextSnake.head.y >= game.boardSize) {
+            nextSnake.head.y = 0
+          }
+        } else {
+          // kill if crashing into wall
+          if (nextSnake.head.x < 0
+            || nextSnake.head.x >= game.boardSize
+            || nextSnake.head.y < 0
+            || nextSnake.head.y >= game.boardSize
+          ) {
+            return { ...game, over: true, snake: { ...snake, alive: false } }
+          }
         }
 
         // grow if eating food
